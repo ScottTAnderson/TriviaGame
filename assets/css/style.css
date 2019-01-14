@@ -1,0 +1,54 @@
+body {
+    color: white;
+}
+
+.jumbotron {
+    text-align: center;
+    margin-top: 10%;
+    min-height: 550px;
+    background: black;
+    border-style: solid;
+    border-width: 5px;
+    border-color: red;
+}
+
+.backgroundImage {
+    height:100%;
+    width:100%;
+    background-image: url(../images/muppets.jpg);
+    background-size: cover; 
+    background-position: top, center;
+    opacity: 0.3;
+    top:0;
+    right:0;
+    position:fixed;
+}
+
+.display-2 {
+    color: black;
+    margin-bottom: 5%;
+    background: radial-gradient(yellow, red);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.answer {
+    color: aqua;
+}
+
+.answer:hover {
+    background-color: yellow;
+    border: blue;
+    border-style: solid;
+    border-width: small;
+}
+
+.timer {
+    margin-top: 5%;
+}
+
+h3 {
+    margin-top: 5%;
+    color: yellow;
+}
+
