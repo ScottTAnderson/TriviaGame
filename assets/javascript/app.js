@@ -192,7 +192,7 @@ var questionArray = [
             isCorrect: false,
         },
     },
-    
+
 ];
 
 //BLANK QUESTION FORM
@@ -272,7 +272,7 @@ var currentWrongImageId = 0;
 //SET TEXT OF CORRECT ANSWER FOR EACH OBJECT IN questionArray
 var alwaysCorrectAnswer = '';
 
-//BEGIN questionArray AT POSITION 0 AND SET ANSWER BOOLEAN VARIABLES TO BE CHANGED DYNAMICALLY BASED ON isCorrect = true FOR EACH QUESTION IN THE ARRAY
+//BEGIN questionArray AT POSITION 0 AND SET ANSWER BOOLEAN VARIABLES TO BE CHANGED DYNAMICALLY BASED ON isCorrect FOR EACH QUESTION IN THE ARRAY
 var currentQuestionArrayPosition = 0;
 var answer1 = false;
 var answer2 = false;
@@ -283,9 +283,10 @@ var answer4 = false;
 var timer = 0;
 var intervalId;
 
-//TRACKS NUMBER OF CORRECT AND WRONG ANSWERS AND CREATES AN ARRAY TO ASSIGN A RATING AT gameEnd()
+//TRACKS NUMBER OF CORRECT WRONG AND UNANSWERED ANSWERS AND CREATES AN ARRAY TO ASSIGN A RATING AT gameEnd()
 var userAnswersCorrect = 0;
 var userAnswersWrong = 0;
+var userAnswersNone = 0;
 var rating = ["Constantine", "Muppy", "Bean Bunny", "Scooter", "Sam the Eagle", "Bobo the Bear", "Mahna Mahna", "Beaker", "Fozzie Bear", "Kermit the Frog", "Jim Henson Himself!"];
 
 //DISPLAY CURRENT QUESTION AND DYNAMICALLY ADD BUTTONS BASED ON THE currentQuestionArrayPosition VALUE
@@ -321,11 +322,12 @@ function clock() {
     }
 };
 
-// FUNCTION IF USING RANDOM IMAGES :: SAVE FOR LATER USERS :: CHANGE currentCorrectImageId AND currentWrongImageId TO currentImageId THROUGHOUT
+// FUNCTION FOR USING RANDOM IMAGES :: SAVE FOR FUTURE DEVELOPERS :: CHANGE currentCorrectImageId AND currentWrongImageId EACH TO currentImageId THROUGHOUT
 // function randomImage() {
 //     currentImageId = Math.floor(Math.random() * 10);
 // };
 
+//ON CORRECT USER RESPONSE, ITTERATE userAnswersCorrect, CLEAR TIMER FOR .GIF ANIMATION, CHECK FOR END OF GAME STATUS, AND AFTER 3 SECONDS END GAME OR RESET TIMER AND GO TO NEXT QUESTION
 function correctAnswer() {
     userAnswersCorrect++;
     $('.timer').empty();
@@ -333,6 +335,7 @@ function correctAnswer() {
     $('.currentQuestion').html(correctImageArray[currentCorrectImageId]);
     $('.currentQuestion').append('<h3>Correct!</h3>');
     currentCorrectImageId++;
+    numberOfQuestions--;
     if (numberOfQuestions != 0) {
         setTimeout(startGame, 3000);
         setTimeout(clockSet, 3000);
@@ -341,6 +344,7 @@ function correctAnswer() {
     }
 };
 
+//ON WRONG USER RESPONSE, ITTERATE userAnswersWrong, CLEAR TIMER FOR .GIF ANIMATION, CHECK FOR END OF GAME STATUS, AND AFTER 3 SECONDS END GAME OR RESET TIMER AND GO TO NEXT QUESTION
 function wrongAnswer() {
     userAnswersWrong++;
     $('.timer').empty();
@@ -348,50 +352,64 @@ function wrongAnswer() {
     $('.currentQuestion').html(wrongImageArray[currentWrongImageId]);
     $('.currentQuestion').append('<h3>Wrong!</h3>');
     $('.currentQuestion').append('<h3>The correct answer was ' + showCorrectAnswer() + '</h3>');
-
     currentWrongImageId++;
+    numberOfQuestions--;
     if (numberOfQuestions != 0) {
-    setTimeout(startGame, 3000);
-    setTimeout(clockSet, 3000);
+        setTimeout(startGame, 3000);
+        setTimeout(clockSet, 3000);
     } else {
         setTimeout(gameEnd, 3000);
     }
 };
 
+//IF USER GUESSES WRONG, CHECKS FOR CORRECT ANSWER BASED ON answer1-answer4 VARIABLES ESTABLISHED DURING BUTTON CREATION
+function showCorrectAnswer() {
+    if (questionArray[currentQuestionArrayPosition - 1].answer1.isCorrect == true) {
+        return questionArray[currentQuestionArrayPosition - 1].answer1.text;
+    } else if (questionArray[currentQuestionArrayPosition - 1].answer2.isCorrect == true) {
+        return questionArray[currentQuestionArrayPosition - 1].answer2.text;
+    } else if (questionArray[currentQuestionArrayPosition - 1].answer3.isCorrect == true) {
+        return questionArray[currentQuestionArrayPosition - 1].answer3.text;
+    } else if (questionArray[currentQuestionArrayPosition - 1].answer4.isCorrect == true) {
+        return questionArray[currentQuestionArrayPosition - 1].answer4.text;
+    }
+}
+
+//ON NO USER RESPONSE, ITTERATE userAnswersNone, CLEAR TIMER FOR .GIF ANIMATION, CHECK FOR END OF GAME STATUS, AND AFTER 2.65 (KNOWN LENGTH OF .GIF LOOP) SECONDS END GAME OR RESET TIMER AND GO TO NEXT QUESTION
 function timesUp() {
+    userAnswersNone++;
     $('.timer').empty();
     clearInterval(intervalId);
     $('.currentQuestion').html('<img src="assets/images/timeout.gif" />');
+    $('.currentQuestion').append('<h3>You still awake out there?</h3>');
+    numberOfQuestions--;
+    if (numberOfQuestions !=0) {
     setTimeout(startGame, 2650);
     setTimeout(clockSet, 2650);
+    } else {
+        setTimeout(gameEnd, 2650);
+    }
 };
 
+//AFTER FINAL QUESTION ASKED, CLEAR TIMER, DISPLAY NUMBER OF CORRECT/WRONG/UNANSWERED RESPONSES, AND GIVE A RANKING BASED ON ARRAY rating[]. RESET ALL COUNTERS
 function gameEnd() {
     $('.timer').empty();
     clearInterval(intervalId);
     $('.currentQuestion').html('<h3>Number of correct answers: ' + userAnswersCorrect + '</h3>');
     $('.currentQuestion').append('<h3>Number of wrong answers: ' + userAnswersWrong + '</h3>');
+    $('.currentQuestion').append('<h3>Number of unanswered questions: ' + userAnswersNone + '</h3>');
     $('.currentQuestion').append('<h3>Your ranking: ' + rating[userAnswersCorrect] + '</h3>');
     $('.currentQuestion').append('<button class="resetButton btn btn-success">Restart Game</button>');
     userAnswersCorrect = 0;
     userAnswersWrong = 0;
+    userAnswersNone = 0;
     currentQuestionArrayPosition = 0;
     currentCorrectImageId = 0;
     currentWrongImageId = 0;
     numberOfQuestions = questionArray.length;
 };
 
-function showCorrectAnswer() {
-    if(questionArray[currentQuestionArrayPosition-1].answer1.isCorrect == true) {
-        return questionArray[currentQuestionArrayPosition-1].answer1.text;
-    } else if(questionArray[currentQuestionArrayPosition-1].answer2.isCorrect == true) {
-        return questionArray[currentQuestionArrayPosition-1].answer2.text;
-    } else if(questionArray[currentQuestionArrayPosition-1].answer3.isCorrect == true) {
-        return questionArray[currentQuestionArrayPosition-1].answer3.text;
-    } else if(questionArray[currentQuestionArrayPosition-1].answer4.isCorrect == true) {
-        return questionArray[currentQuestionArrayPosition-1].answer4.text;
-    }
-}
+//CLICK EVENT HANDLERS (3)
 
 $('.startButton').on('click', function () {
     startGame();
@@ -404,11 +422,8 @@ $(document).on('click', '.resetButton', function () {
 });
 
 $(document).on('click', '.answer', function () {
-    numberOfQuestions--;
-    //set ID of button clicked to a variable, and evaluate it to get booleon value of corresponding variable
-    var isCorrect = eval(this.id);
-    console.log(this);
-    console.log(questionArray[currentQuestionArrayPosition-1].answer1.text);
+    //SET VARIABLE isCorrect TO THE VARIABLE WHOSE NAME IS EQUAL TO THE ID OF THE BUTTON CLICKED, i.e. answer1-answer4, TO TEST FOR CORRECT OR WRONG RESPONSE
+    var isCorrect = window[this.id];
     if (isCorrect == true) {
         correctAnswer();
     } else {
